@@ -1,0 +1,166 @@
+/* ─────────────────────────────────────────────────────────────
+   MAREA BUSINESS — Sistema visual (tomado del manual de identidad)
+   Mobile-first. Todos los valores son variables editables abajo.
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  /* Paleta institucional */
+  --carbon: #1f1f1f;      /* Negro carbón — principal */
+  --marfil: #f5f3ee;      /* Blanco marfil */
+  --piedra: #bdb7ae;      /* Gris piedra */
+  --champagne: #c7a46a;   /* Champagne — acento dorado */
+  --oliva: #5f6955;       /* Verde oliva */
+  --nogal: #6a4e3b;       /* Nogal */
+
+  /* Derivados para el fondo oscuro */
+  --carbon-2: #161616;
+  --carbon-3: #262523;
+  --linea: rgba(245, 243, 238, 0.14);
+  --linea-dorada: rgba(199, 164, 106, 0.45);
+
+  /* Tipografías (equivalentes web al manual: Lovelace→Cormorant, Morisawa→Jost) */
+  --serif: 'Cormorant Garamond', 'Times New Roman', serif;
+  --sans: 'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Escala fluida */
+  --space: clamp(1.25rem, 5vw, 2.5rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background-color: var(--carbon);
+  /* Textura sutil: viñeta radial + grano fino, coherente con "sofisticación" */
+  background-image:
+    radial-gradient(120% 80% at 50% -10%, rgba(199, 164, 106, 0.10), transparent 55%),
+    radial-gradient(100% 60% at 50% 110%, rgba(95, 105, 85, 0.10), transparent 60%),
+    linear-gradient(180deg, var(--carbon-2), var(--carbon) 40%, var(--carbon-2));
+  background-attachment: fixed;
+  color: var(--marfil);
+  font-family: var(--sans);
+  font-weight: 300;
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Grano de textura muy sutil por encima del fondo */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Contenedor central estrecho, tipo invitación */
+.wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 620px;
+  margin-inline: auto;
+  padding-inline: var(--space);
+}
+
+/* Marca tipográfica del logo "Marea [ BUSINESS ]" */
+.marca {
+  text-align: center;
+  line-height: 1;
+}
+.marca__nombre {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(3rem, 16vw, 5rem);
+  letter-spacing: 0.01em;
+  color: var(--marfil);
+}
+.marca__business {
+  font-family: var(--sans);
+  font-weight: 300;
+  font-size: clamp(0.72rem, 3.4vw, 1rem);
+  letter-spacing: 0.55em;
+  text-indent: 0.55em; /* compensa el tracking del último carácter */
+  color: var(--marfil);
+  margin-top: 0.35em;
+}
+.marca__business::before { content: '[ '; color: var(--champagne); }
+.marca__business::after  { content: ' ]'; color: var(--champagne); }
+
+/* Utilidades */
+.kicker {
+  font-family: var(--sans);
+  font-weight: 300;
+  font-size: clamp(0.7rem, 3vw, 0.82rem);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--piedra);
+}
+.dorado { color: var(--champagne); }
+.serif { font-family: var(--serif); }
+
+/* Filete decorativo con rombo central (motivo elegante) */
+.filete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  color: var(--linea-dorada);
+}
+.filete::before,
+.filete::after {
+  content: '';
+  height: 1px;
+  width: clamp(40px, 18vw, 90px);
+  background: linear-gradient(90deg, transparent, var(--champagne));
+  opacity: 0.6;
+}
+.filete::after { transform: scaleX(-1); }
+.filete__rombo {
+  width: 6px;
+  height: 6px;
+  transform: rotate(45deg);
+  background: var(--champagne);
+}
+
+/* Aparición suave al hacer scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  html { scroll-behavior: auto; }
+}
