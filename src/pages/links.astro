@@ -9,37 +9,14 @@ const waLink = (numero: string) => `https://wa.me/${numero}?text=${encodeURIComp
 
 const mapsQuery = 'Edificio+Gala+Puerto,+Calle+10+y+11,+Punta+del+Este';
 const mapsUrl = `https://maps.google.com/?q=${mapsQuery}`;
-const mapsEmbed = `https://www.google.com/maps?q=${mapsQuery}&output=embed`;
+// Google Maps en modo "cómo llegar / iniciar ruta" (abre la navegación en auto)
+const rutaUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent('Edificio Gala Puerto, Calle 10 y 11, Punta del Este')}`;
 
-const links = [
-  {
-    href: `${base}/invitacion/`,
-    label: 'Invitación',
-    sub: 'Inauguración',
-    external: false,
-    icon: 'calendario',
-  },
-  {
-    href: waLink('59899759109'),
-    label: 'WhatsApp',
-    sub: 'Mecol Estudio',
-    external: true,
-    icon: 'whatsapp',
-  },
-  {
-    href: waLink('59895559230'),
-    label: 'WhatsApp',
-    sub: 'Inmobiliaria Caetano',
-    external: true,
-    icon: 'whatsapp',
-  },
-  {
-    href: mapsUrl,
-    label: 'Cómo llegar',
-    sub: 'Edificio Gala Puerto',
-    external: true,
-    icon: 'pin',
-  },
+// ⚠️ COMPLETAR: poné la URL real de la web de cada estudio en "web".
+// El WhatsApp (botón circular) ya está con el número real.
+const contactos = [
+  { nombre: 'Mecol Estudio', web: '#', wa: '59899759109' },
+  { nombre: 'Inmobiliaria Caetano', web: '#', wa: '59895559230' },
 ];
 ---
 
@@ -70,9 +47,12 @@ const links = [
         <img class="links__logo" src={`${base}/logo-marea.png`} alt="Marea Group" width="720" height="405" />
         <p class="links__bajada serif">
           Un punto de encuentro profesional en Punta del Este.
-          <br />
-          Mecol Estudio e Inmobiliaria Caetano, juntos bajo Marea.
         </p>
+        <div class="hero__logos">
+          <img class="logo-mecol" src={`${base}/logos/mecol-blanco.png`} alt="Mecol Estudio" loading="lazy" />
+          <span class="hero__logos-div"></span>
+          <img class="logo-caetano" src={`${base}/logos/caetano-blanco.png`} alt="Caetano Negocios Inmobiliarios" loading="lazy" />
+        </div>
       </header>
 
       <div class="filete reveal"><span class="filete__rombo"></span></div>
@@ -80,59 +60,52 @@ const links = [
       <!-- ── BOTONES ───────────────────────────────────────── -->
       <nav class="links__botones reveal" aria-label="Enlaces">
         {
-          links.map((l) => (
-            <a
-              class="btn-link"
-              href={l.href}
-              target={l.external ? '_blank' : undefined}
-              rel={l.external ? 'noopener' : undefined}
-            >
-              <span class="btn-link__icon" aria-hidden="true">
-                {l.icon === 'whatsapp' && (
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                    <path d="M17.5 14.4c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.06 2.87 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35zM12.05 21.5h-.01a9.5 9.5 0 0 1-4.84-1.33l-.35-.2-3.6.94.96-3.5-.23-.36a9.46 9.46 0 0 1-1.45-5.05c0-5.23 4.26-9.49 9.5-9.49 2.54 0 4.92.99 6.72 2.78a9.42 9.42 0 0 1 2.78 6.72c0 5.24-4.26 9.5-9.49 9.5zm8.08-17.58A11.4 11.4 0 0 0 12.04.5C5.76.5.65 5.61.65 11.89c0 2.02.53 3.99 1.53 5.73L.5 23.5l6.02-1.58a11.34 11.34 0 0 0 5.52 1.41h.01c6.28 0 11.39-5.11 11.39-11.39 0-3.04-1.18-5.9-3.33-8.05z" />
-                  </svg>
-                )}
-                {l.icon === 'calendario' && (
+          contactos.map((c) => (
+            <div class="link-row">
+              <a class="btn-link btn-link--main" href={c.web} target="_blank" rel="noopener">
+                <span class="btn-link__icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3.5" y="5" width="17" height="15.5" rx="1.6" />
-                    <path d="M3.5 9.5h17" />
-                    <path d="M8 3v3.4M16 3v3.4" />
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M3 12h18" />
+                    <path d="M12 3c2.6 2.6 2.6 15.4 0 18M12 3c-2.6 2.6-2.6 15.4 0 18" />
                   </svg>
-                )}
-                {l.icon === 'pin' && (
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 21.5s7-6.6 7-12.2A7 7 0 0 0 5 9.3c0 5.6 7 12.2 7 12.2z" />
-                    <circle cx="12" cy="9.3" r="2.4" />
-                  </svg>
-                )}
-              </span>
-              <span class="btn-link__texto">
-                <span class="btn-link__label">{l.label}</span>
-                <span class="btn-link__sub">{l.sub}</span>
-              </span>
-            </a>
+                </span>
+                <span class="btn-link__texto">
+                  <span class="btn-link__label">{c.nombre}</span>
+                </span>
+              </a>
+              <a class="btn-wpp" href={waLink(c.wa)} target="_blank" rel="noopener" aria-label={`WhatsApp ${c.nombre}`}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+                  <path d="M17.5 14.4c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.06 2.87 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35zM12.05 21.5h-.01a9.5 9.5 0 0 1-4.84-1.33l-.35-.2-3.6.94.96-3.5-.23-.36a9.46 9.46 0 0 1-1.45-5.05c0-5.23 4.26-9.49 9.5-9.49 2.54 0 4.92.99 6.72 2.78a9.42 9.42 0 0 1 2.78 6.72c0 5.24-4.26 9.5-9.49 9.5zm8.08-17.58A11.4 11.4 0 0 0 12.04.5C5.76.5.65 5.61.65 11.89c0 2.02.53 3.99 1.53 5.73L.5 23.5l6.02-1.58a11.34 11.34 0 0 0 5.52 1.41h.01c6.28 0 11.39-5.11 11.39-11.39 0-3.04-1.18-5.9-3.33-8.05z" />
+                </svg>
+              </a>
+            </div>
           ))
         }
+
+        <div class="link-row">
+          <a class="btn-link btn-link--main" href={mapsUrl} target="_blank" rel="noopener">
+            <span class="btn-link__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 21.5s7-6.6 7-12.2A7 7 0 0 0 5 9.3c0 5.6 7 12.2 7 12.2z" />
+                <circle cx="12" cy="9.3" r="2.4" />
+              </svg>
+            </span>
+            <span class="btn-link__texto">
+              <span class="btn-link__label">Ubicación</span>
+            </span>
+          </a>
+          <a class="btn-wpp" href={rutaUrl} target="_blank" rel="noopener" aria-label="Iniciar ruta en Google Maps">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 3 3 10.5l7.5 2.5 2.5 7.5L21 3z" />
+            </svg>
+          </a>
+        </div>
       </nav>
 
-      <!-- ── MAPA ──────────────────────────────────────────── -->
-      <section class="links__mapa reveal" aria-label="Mapa de ubicación">
-        <iframe
-          src={mapsEmbed}
-          title="Ubicación"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-        ></iframe>
-      </section>
-
       <!-- ── FOOTER ────────────────────────────────────────── -->
-      <footer class="pie reveal">
-        <div class="marca marca--sm">
-          <div class="marca__nombre">Marea</div>
-          <div class="marca__business">Group</div>
-        </div>
-        <p class="pie__firma">Punta del Este</p>
+      <footer class="pie">
+        <p class="pie__firma">Uruguay · Punta del Este</p>
       </footer>
     </main>
 
@@ -155,7 +128,8 @@ const links = [
     <style>
       .links {
         max-width: 420px;
-        padding-block: clamp(2.4rem, 8vh, 3.6rem) clamp(1rem, 4vh, 2rem);
+        min-height: 100dvh;
+        padding-block: clamp(1.5rem, 4.5vh, 2.4rem) clamp(0.8rem, 2.5vh, 1.4rem);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -176,6 +150,7 @@ const links = [
         /* Logo en negro → blanco marfil sobre el fondo carbón */
         filter: brightness(0) invert(1);
         opacity: 0.95;
+        margin-bottom: clamp(1rem, 4vw, 1.8rem);
       }
       .links__bajada {
         font-size: clamp(1rem, 4.4vw, 1.2rem);
@@ -184,6 +159,27 @@ const links = [
         color: var(--marfil);
         margin: 0;
         max-width: 30ch;
+      }
+
+      /* Dos logos (Mecol + Caetano), igual que en la invitación */
+      .hero__logos {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(1.1rem, 5vw, 2rem);
+      }
+      .hero__logos img {
+        height: clamp(26px, 8vw, 42px);
+        width: auto;
+        opacity: 0.9;
+      }
+      .hero__logos img.logo-mecol {
+        height: 25px;
+      }
+      .hero__logos-div {
+        width: 1px;
+        height: clamp(30px, 8vw, 42px);
+        background: var(--linea);
       }
 
       .filete {
@@ -214,6 +210,37 @@ const links = [
         border-color: var(--champagne);
       }
       .btn-link:active { transform: scale(0.98); }
+      .btn-link--center { justify-content: center; }
+
+      /* Fila: botón web + botón circular de WhatsApp */
+      .link-row {
+        display: flex;
+        align-items: center;
+        gap: clamp(0.6rem, 2.5vw, 0.9rem);
+        width: 100%;
+      }
+      .link-row .btn-link--main {
+        flex: 1;
+        min-width: 0;
+      }
+      .btn-wpp {
+        flex: none;
+        width: clamp(54px, 15vw, 64px);
+        height: clamp(54px, 15vw, 64px);
+        border-radius: 50%;
+        border: 1px solid var(--linea-dorada);
+        background: rgba(199, 164, 106, 0.05);
+        color: var(--champagne);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+      }
+      .btn-wpp:hover {
+        background: rgba(199, 164, 106, 0.12);
+        border-color: var(--champagne);
+      }
+      .btn-wpp:active { transform: scale(0.95); }
       .btn-link__icon {
         display: flex;
         align-items: center;
@@ -242,35 +269,18 @@ const links = [
         color: var(--piedra);
       }
 
-      /* ── MAPA ──────────────────────────────────────────── */
-      .links__mapa {
-        width: 100%;
-        margin-top: clamp(1.8rem, 6vh, 2.6rem);
-        border: 1px solid var(--linea);
-        border-radius: 8px;
-        overflow: hidden;
-        line-height: 0;
-      }
-      .links__mapa iframe {
-        width: 100%;
-        height: 200px;
-        border: 0;
-        display: block;
-        filter: grayscale(0.25) contrast(1.05);
-      }
-
       /* ── PIE ───────────────────────────────────────────── */
       .pie {
         text-align: center;
-        padding-block: clamp(2.2rem, 8vh, 3.4rem) clamp(0.6rem, 2vh, 1rem);
-        margin-top: clamp(1.4rem, 5vh, 2rem);
-        border-top: 1px solid var(--linea);
+        padding-block: 0;
+        margin-top: auto;
+        padding-top: clamp(1.2rem, 4vh, 2rem);
         width: 100%;
       }
       .marca--sm .marca__nombre { font-size: clamp(1.7rem, 8vw, 2.1rem); }
       .marca--sm .marca__business { font-size: 0.58rem; }
       .pie__firma {
-        margin-top: 1rem;
+        margin-top: 0;
         font-family: var(--sans);
         font-weight: 300;
         font-size: 0.72rem;
