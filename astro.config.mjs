@@ -8,4 +8,6 @@ export default defineConfig({
   site: 'https://naradirocco.github.io',
   base: '/marea',
   compressHTML: true,
+  // La raíz redirige a la invitación (ver src/pages/index.astro).
+  // Las dos páginas: /invitacion y /links
 });

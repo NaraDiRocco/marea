@@ -37,12 +37,25 @@ export const evento = {
   },
 
   // ── RSVP POR WHATSAPP ──────────────────────────────────────
-  whatsapp: {
+  // ── RSVP: dos botones, uno por estudio ─────────────────────
+  rsvp: {
+    titulo: 'Confirmá tu lugar',
+    subtitulo: 'Confirmá tu asistencia con quien te invitó',
     // Número en formato internacional SIN + ni espacios. Uruguay: 598 + número sin el 0.
-    numero: '59899759109',
-    // Mensaje prellenado que se abre en el chat
-    mensaje: '¡Hola! Confirmo mi asistencia a la inauguración de Marea Business.',
-    textoBoton: 'Confirmar asistencia',
+    contactos: [
+      {
+        nombre: 'Mecol Estudio',
+        logo: '/logos/mecol-blanco.png',
+        numero: '59899759109',
+        mensaje: '¡Hola! Confirmo mi asistencia a la inauguración. (Mecol Estudio)',
+      },
+      {
+        nombre: 'Inmobiliaria Caetano',
+        logo: '/logos/caetano-blanco.png',
+        numero: '59895559230',
+        mensaje: '¡Hola! Confirmo mi asistencia a la inauguración. (Inmobiliaria Caetano)',
+      },
+    ],
   },
 
   // ── DRESS CODE (opcional; dejar '' para ocultar) ───────────
