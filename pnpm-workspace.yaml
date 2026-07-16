@@ -1,0 +1,16 @@
+# pnpm 11 (entorno de Hostinger) requiere aprobar explícitamente los
+# build-scripts nativos; si algún paquete con script queda sin declarar, el
+# `pnpm install` falla con ERR_PNPM_IGNORED_BUILDS.
+#
+# sharp (servicio de imágenes por defecto de Astro) SÍ necesita su script de
+# instalación para bajar/compilar sus binarios nativos.
+#
+# esbuild queda EXPLÍCITAMENTE denegado: su postinstall es sólo un auto-chequeo
+# (no instala el binario, que ya viene en @esbuild/<plataforma>) y en Hostinger
+# ese chequeo falla con EACCES. Sin correrlo, esbuild igual funciona en el build;
+# scripts/fix-esbuild-perms.mjs le asegura el permiso +x antes de compilar.
+#
+# El resto de los paquetes sigue bloqueado por defecto (protección supply-chain).
+allowBuilds:
+  sharp: true
+  esbuild: false
