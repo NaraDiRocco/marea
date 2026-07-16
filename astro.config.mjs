@@ -8,9 +8,9 @@ export default defineConfig({
   // `pnpm build`. El script scripts/fix-esbuild-perms.mjs evita el EACCES de
   // esbuild que rompía las compilaciones (mismo esquema que Mecol).
   //
-  // TODO: reemplazar por el dominio real de Marea cuando esté definido.
+  // Dominio de producción en Hostinger (raíz del dominio propio).
   // Sólo afecta canonical/sitemap; no cambia el funcionamiento de las rutas.
-  site: 'https://mareagroup.com',
+  site: 'https://mareagrp.com',
   output: 'static',
   trailingSlash: 'never',
   compressHTML: true,
