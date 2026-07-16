@@ -59,7 +59,7 @@ export const evento = {
   },
 
   // ── DRESS CODE (opcional; dejar '' para ocultar) ───────────
-  dressCode: 'Elegante',
+  dressCode: 'Formal',
 };
 
 /**

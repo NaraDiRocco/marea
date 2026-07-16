@@ -3,11 +3,18 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build
 export default defineConfig({
-  // Sitio estático — la invitación es una única página optimizada para mobile.
-  // Publicado en GitHub Pages: https://naradirocco.github.io/marea/
-  site: 'https://naradirocco.github.io',
-  base: '/marea',
+  // Sitio estático desplegado en Hostinger, en la raíz del dominio propio.
+  // Deploy: Hostinger clona este repo (marketingmecol/Marea-Web) y corre
+  // `pnpm build`. El script scripts/fix-esbuild-perms.mjs evita el EACCES de
+  // esbuild que rompía las compilaciones (mismo esquema que Mecol).
+  //
+  // TODO: reemplazar por el dominio real de Marea cuando esté definido.
+  // Sólo afecta canonical/sitemap; no cambia el funcionamiento de las rutas.
+  site: 'https://mareagroup.com',
+  output: 'static',
+  trailingSlash: 'never',
   compressHTML: true,
-  // La raíz redirige a la invitación (ver src/pages/index.astro).
-  // Las dos páginas: /invitacion y /links
+  // Sin `base`: el sitio vive en la raíz del dominio.
+  // Las rutas resuelven solas vía import.meta.env.BASE_URL en cada página.
+  // Páginas: / (redirige a /invitacion), /invitacion y /links
 });

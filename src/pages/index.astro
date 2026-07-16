@@ -1,7 +1,8 @@
 ---
-// Raíz del sitio: redirige a la invitación respetando el base (/marea).
+// Raíz del sitio: redirige a la invitación. `base` resuelve solo según la
+// configuración (raíz de dominio en Hostinger → cadena vacía).
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const destino = `${base}/invitacion/`;
+const destino = `${base}/invitacion`;
 ---
 
 <!doctype html>

@@ -3,10 +3,13 @@
   "type": "module",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/fix-esbuild-perms.mjs && astro build",
     "preview": "astro preview",
     "astro": "astro"
   },

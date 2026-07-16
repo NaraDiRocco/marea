@@ -82,7 +82,6 @@ const waLink = (numero: string, mensaje: string) =>
       <section class="bloque reveal" aria-labelledby="lugar-title">
         <div class="filete"><span class="filete__rombo"></span></div>
         <h2 id="lugar-title" class="seccion__titulo">¿Dónde?</h2>
-        <p class="lugar__nombre serif">{evento.lugar.nombre}</p>
         <p class="lugar__dir">{evento.lugar.direccion}</p>
         {
           evento.dressCode && (
@@ -128,10 +127,7 @@ const waLink = (numero: string, mensaje: string) =>
 
       <!-- ── FOOTER ────────────────────────────────────────── -->
       <footer class="pie reveal">
-        <div class="marca marca--sm">
-          <div class="marca__nombre">Marea</div>
-          <div class="marca__business">Group</div>
-        </div>
+        <img class="pie__logo" src={`${base}/logo-marea.png`} alt="Marea Group" width="720" height="405" />
         <p class="pie__firma">Punta del Este</p>
       </footer>
     </main>
@@ -490,8 +486,14 @@ const waLink = (numero: string, mensaje: string) =>
         padding-block: clamp(2.5rem, 8vh, 4rem);
         border-top: 1px solid var(--linea);
       }
-      .marca--sm .marca__nombre { font-size: clamp(1.9rem, 9vw, 2.4rem); }
-      .marca--sm .marca__business { font-size: 0.62rem; }
+      .pie__logo {
+        width: clamp(120px, 34vw, 160px);
+        height: auto;
+        margin-inline: auto;
+        /* Logo en negro → blanco marfil sobre el fondo carbón */
+        filter: brightness(0) invert(1);
+        opacity: 0.9;
+      }
       .pie__firma {
         margin-top: 1.2rem;
         font-family: var(--sans);
