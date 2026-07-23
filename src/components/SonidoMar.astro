@@ -1,27 +1,28 @@
 ---
 /*
- * SonidoMar.astro — Botón que activa/silencia un "ruido de mar" generado
- * con Web Audio (ruido filtrado + swell tipo olas). Sin archivos ni licencias.
- * Requiere un toque del usuario (los navegadores bloquean el audio automático).
+ * SonidoMar.astro — "Ruido de mar" generado con Web Audio (ruido filtrado +
+ * swell tipo olas). Sin archivos ni licencias.
+ *
+ * Arranca ACTIVADO por defecto, pero como los navegadores bloquean el audio
+ * automático (Safari incluido), el sonido empieza en la PRIMERA interacción
+ * del usuario (toque/click/tecla). El botón permite silenciarlo.
  *
  * Prop `inline`: si es true, el botón se posiciona ABSOLUTE dentro de su
- * contenedor (ej. la tarjeta glass) en vez de FIXED a la ventana.
+ * contenedor (la tarjeta glass) en vez de FIXED a la ventana.
  */
 const { inline = false } = Astro.props;
 ---
 
 <button
-  class:list={['sonido', { 'sonido--inline': inline }]}
+  class:list={['sonido', 'is-on', { 'sonido--inline': inline }]}
   id="btnSonido"
   type="button"
-  aria-pressed="false"
-  aria-label="Activar sonido de mar"
+  aria-pressed="true"
+  aria-label="Silenciar sonido de mar"
 >
   <svg class="sonido__icon" viewBox="0 0 24 24" width="20" height="20" fill="none"
        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <!-- Cuerpo del altavoz -->
     <path d="M4 9.5v5h3.3L12 18V6L7.3 9.5H4z" fill="currentColor" stroke="none" />
-    <!-- Ondas de sonido (se muestran/animan al activar) -->
     <path class="sonido__wave sonido__wave--1" d="M15 9.3a4 4 0 0 1 0 5.4" />
     <path class="sonido__wave sonido__wave--2" d="M17.6 7a7.2 7.2 0 0 1 0 10" />
   </svg>
@@ -33,7 +34,7 @@ const { inline = false } = Astro.props;
   let ctx = null;
   let master = null;
   let started = false;
-  let playing = false;
+  let desiredOn = true; // arranca "activado"; suena en el primer gesto
 
   function build() {
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -84,22 +85,51 @@ const { inline = false } = Astro.props;
     started = true;
   }
 
-  btn.addEventListener('click', () => {
-    if (!started) build();
-    // Safari (WebKit) exige que resume() se llame SINCRÓNICAMENTE dentro del
-    // gesto del usuario. Un `await` previo rompe ese permiso y el audio no suena.
-    if (ctx.state !== 'running') ctx.resume();
-
-    playing = !playing;
+  function fade(to) {
     const now = ctx.currentTime;
     master.gain.cancelScheduledValues(now);
     master.gain.setValueAtTime(master.gain.value, now);
-    master.gain.setTargetAtTime(playing ? 0.32 : 0.0, now, 0.7);
+    master.gain.setTargetAtTime(to, now, 0.7);
+  }
 
-    btn.classList.toggle('is-on', playing);
-    btn.setAttribute('aria-pressed', String(playing));
-    btn.setAttribute('aria-label', playing ? 'Silenciar sonido de mar' : 'Activar sonido de mar');
+  function reflect() {
+    btn.classList.toggle('is-on', desiredOn);
+    btn.setAttribute('aria-pressed', String(desiredOn));
+    btn.setAttribute('aria-label', desiredOn ? 'Silenciar sonido de mar' : 'Activar sonido de mar');
+    btn.dataset.audio = started && ctx ? ctx.state : 'none';
+  }
+
+  // Sincroniza el audio con la intención. DEBE llamarse dentro de un gesto
+  // del usuario para que el navegador permita el sonido (Safari incluido).
+  function apply() {
+    if (desiredOn) {
+      if (!started) build();
+      if (ctx.state !== 'running') ctx.resume(); // sincrónico: clave para Safari
+      if (ctx.state === 'running') fade(0.32);
+    } else if (started) {
+      fade(0);
+    }
+    reflect();
+  }
+
+  // El audio automático está bloqueado: arrancamos en la primera interacción.
+  const gestures = ['pointerdown', 'touchend', 'click', 'keydown'];
+  function kick(e) {
+    const t = e && e.target;
+    if (t && t.closest && t.closest('#btnSonido')) return; // el botón se maneja solo
+    gestures.forEach((ev) => window.removeEventListener(ev, kick));
+    apply();
+  }
+  gestures.forEach((ev) => window.addEventListener(ev, kick, { passive: true }));
+
+  // Botón: activar / silenciar manualmente
+  btn.addEventListener('click', () => {
+    gestures.forEach((ev) => window.removeEventListener(ev, kick));
+    desiredOn = !desiredOn;
+    apply();
   });
+
+  reflect(); // estado visual inicial (activado)
 </script>
 
 <style>
@@ -122,7 +152,6 @@ const { inline = false } = Astro.props;
     cursor: pointer;
     transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease, transform 0.2s ease;
   }
-  /* Variante dentro de la tarjeta (se posiciona respecto al contenedor relative) */
   .sonido--inline {
     position: absolute;
     top: clamp(0.9rem, 3.5vw, 1.3rem);
@@ -134,13 +163,11 @@ const { inline = false } = Astro.props;
   .sonido.is-on { color: var(--marfil); border-color: rgba(245, 243, 238, 0.55); }
 
   .sonido__icon { display: block; }
-  /* Ondas ocultas cuando está apagado */
   .sonido__wave { opacity: 0; transition: opacity 0.3s ease; }
   .sonido.is-on .sonido__wave { opacity: 1; }
   .sonido.is-on .sonido__wave--1 { animation: son-late 2.2s ease-in-out infinite; }
   .sonido.is-on .sonido__wave--2 { animation: son-late 2.2s ease-in-out infinite 0.3s; }
 
-  /* Línea de "mute" cuando está apagado */
   .sonido__slash {
     position: absolute;
     width: 24px;
