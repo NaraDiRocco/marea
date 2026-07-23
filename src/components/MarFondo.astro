@@ -38,7 +38,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     height: 100%;
     object-fit: cover;
     /* Un punto menos de saturación/brillo → más sobrio y nocturno (on-brand) */
-    filter: saturate(0.88) brightness(0.7) contrast(1.05);
+    filter: saturate(0.9) brightness(0.78) contrast(1.04);
   }
   /* Velo oscuro (más denso arriba y abajo) para el texto del hero y el pie,
      con un leve tinte carbón/teal que unifica con la marca */
@@ -48,10 +48,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     background:
       radial-gradient(120% 80% at 50% -10%, rgba(199, 164, 106, 0.10), transparent 55%),
       linear-gradient(180deg,
-        rgba(12, 16, 15, 0.62) 0%,
-        rgba(12, 16, 15, 0.34) 38%,
-        rgba(12, 16, 15, 0.40) 62%,
-        rgba(10, 12, 11, 0.70) 100%);
+        rgba(12, 16, 15, 0.52) 0%,
+        rgba(12, 16, 15, 0.26) 38%,
+        rgba(12, 16, 15, 0.32) 62%,
+        rgba(10, 12, 11, 0.60) 100%);
   }
 
   @media (prefers-reduced-motion: reduce) {

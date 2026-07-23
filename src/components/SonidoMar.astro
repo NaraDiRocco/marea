@@ -84,9 +84,11 @@ const { inline = false } = Astro.props;
     started = true;
   }
 
-  btn.addEventListener('click', async () => {
+  btn.addEventListener('click', () => {
     if (!started) build();
-    if (ctx.state === 'suspended') await ctx.resume();
+    // Safari (WebKit) exige que resume() se llame SINCRÓNICAMENTE dentro del
+    // gesto del usuario. Un `await` previo rompe ese permiso y el audio no suena.
+    if (ctx.state !== 'running') ctx.resume();
 
     playing = !playing;
     const now = ctx.currentTime;

@@ -1,8 +1,6 @@
 ---
 import '../styles/global.css';
 import Countdown from '../components/Countdown.astro';
-import MarFondo from '../components/MarFondo.astro';
-import SonidoMar from '../components/SonidoMar.astro';
 import { evento } from '../lib/config';
 
 // Base del sitio (para GitHub Pages: /marea). Sin barra final para concatenar rutas.
@@ -11,13 +9,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 // Genera el link de WhatsApp con mensaje prellenado
 const waLink = (numero: string, mensaje: string) =>
   `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
-
-// ── Metadata para compartir (WhatsApp / redes) ──
-const shareTitle = 'MAREA Group · Inauguración';
-const shareDesc =
-  'Te invitamos a la inauguración de nuestras nuevas instalaciones en Punta del Este. 19 de septiembre de 2026.';
-const ogImage = new URL('/og-marea.jpg', Astro.site).href;
-const pageUrl = new URL('/invitacion', Astro.site).href;
 ---
 
 <!doctype html>
@@ -26,25 +17,15 @@ const pageUrl = new URL('/invitacion', Astro.site).href;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#1f1f1f" />
-    <title>{shareTitle}</title>
-    <meta name="description" content={shareDesc} />
-    <link rel="canonical" href={pageUrl} />
-
-    <!-- Open Graph (WhatsApp / Facebook) -->
+    <meta name="robots" content="noindex" />
+    <title>{evento.titulo} · {evento.subtitulo} (borrador)</title>
+    <meta
+      name="description"
+      content={`${evento.titulo} de ${evento.subtitulo} — ${evento.fechaTexto}, ${evento.lugar.direccion}.`}
+    />
+    <meta property="og:title" content={`${evento.titulo} · ${evento.subtitulo}`} />
+    <meta property="og:description" content={evento.descripcion} />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="MAREA Group" />
-    <meta property="og:url" content={pageUrl} />
-    <meta property="og:title" content={shareTitle} />
-    <meta property="og:description" content={shareDesc} />
-    <meta property="og:image" content={ogImage} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={shareTitle} />
-    <meta name="twitter:description" content={shareDesc} />
-    <meta name="twitter:image" content={ogImage} />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -54,11 +35,8 @@ const pageUrl = new URL('/invitacion', Astro.site).href;
     />
   </head>
 
-  <body class="inv2">
-    <MarFondo />
-    <div class="glass-shell">
-    <main class="wrap glass-panel">
-      <SonidoMar inline />
+  <body>
+    <main class="wrap">
       <!-- ── HERO ──────────────────────────────────────────── -->
       <header class="hero">
         <div class="hero__main">
@@ -154,7 +132,6 @@ const pageUrl = new URL('/invitacion', Astro.site).href;
         <p class="pie__firma">Punta del Este</p>
       </footer>
     </main>
-    </div>
 
     <script>
       // Reveal on scroll — respeta prefers-reduced-motion vía CSS.
@@ -173,68 +150,6 @@ const pageUrl = new URL('/invitacion', Astro.site).href;
     </script>
 
     <style>
-      /* ═══ INVITACIÓN 2 · TARJETA GLASS SOBRE EL MAR ══════════ */
-      /* El MarFondo (fixed) es el telón; el contenido va en un panel glass
-         con margen en los laterales y abajo, dejando ver el mar por detrás. */
-      .glass-shell {
-        position: relative;
-        z-index: 1;
-        min-height: 100dvh;
-        padding: clamp(14px, 4vw, 26px);
-        padding-bottom: clamp(24px, 7vw, 48px);
-        display: flex;
-        flex-direction: column;
-      }
-
-      .glass-panel {
-        position: relative;
-        z-index: 1;
-        width: min(560px, 100%);
-        margin-inline: auto;
-        margin-block: clamp(14px, 4vw, 26px);
-        padding-inline: clamp(22px, 6vw, 40px);
-        border-radius: clamp(22px, 6vw, 36px);
-        background: rgba(24, 29, 27, 0.30);
-        -webkit-backdrop-filter: blur(6px) saturate(1.3);
-        backdrop-filter: blur(6px) saturate(1.3);
-        border: 1px solid rgba(245, 243, 238, 0.18);
-        box-shadow:
-          0 34px 90px -34px rgba(0, 0, 0, 0.78),
-          inset 0 1px 0 rgba(255, 255, 255, 0.18);
-        overflow: hidden;
-      }
-      /* Reflejo tipo vidrio en el borde superior */
-      .glass-panel::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: inherit;
-        pointer-events: none;
-        background: linear-gradient(157deg, rgba(255, 255, 255, 0.13), transparent 34%);
-      }
-      /* Filete dorado interior muy sutil */
-      .glass-panel::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: inherit;
-        pointer-events: none;
-        box-shadow: inset 0 0 0 1px rgba(199, 164, 106, 0.14);
-      }
-
-      /* El hero deja de ocupar toda la pantalla: fluye dentro de la tarjeta */
-      .glass-panel .hero {
-        min-height: auto;
-        padding-block: clamp(2.2rem, 7vw, 3.4rem) clamp(1.4rem, 5vw, 2.4rem);
-      }
-      .glass-panel .hero__main { justify-content: flex-start; }
-      /* Bajar el logo MAREA para despejarlo del botón de sonido */
-      .glass-panel .hero__logo-wrap { margin-top: clamp(1.4rem, 6vw, 2.6rem); }
-      /* Separar los logos MECOL/CAETANO del párrafo de la descripción */
-      .glass-panel .hero__logos { margin-top: clamp(1rem, 4.5vw, 2rem); }
-      /* El pie sin borde duro (queda dentro del vidrio) */
-      .glass-panel .pie { border-top: 1px solid var(--linea); }
-
       /* ── HERO ──────────────────────────────────────────── */
       .hero {
         position: relative;
