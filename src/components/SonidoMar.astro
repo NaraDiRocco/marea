@@ -1,40 +1,44 @@
 ---
 /*
  * SonidoMar.astro — "Ruido de mar" generado con Web Audio (ruido filtrado +
- * swell tipo olas). Sin archivos ni licencias.
+ * swell tipo olas). Sin archivos ni licencias. Se activa al TOCAR el botón
+ * (los navegadores bloquean el audio automático; Safari incluido).
  *
- * Arranca ACTIVADO por defecto, pero como los navegadores bloquean el audio
- * automático (Safari incluido), el sonido empieza en la PRIMERA interacción
- * del usuario (toque/click/tecla). El botón permite silenciarlo.
+ * Junto al botón, un badge "Viví la experiencia" invita a activarlo; el badge
+ * desaparece al primer toque.
  *
- * Prop `inline`: si es true, el botón se posiciona ABSOLUTE dentro de su
- * contenedor (la tarjeta glass) en vez de FIXED a la ventana.
+ * Prop `inline`: si es true, se posiciona ABSOLUTE dentro de su contenedor
+ * (la tarjeta glass) en vez de FIXED a la ventana.
  */
 const { inline = false } = Astro.props;
 ---
 
-<button
-  class:list={['sonido', 'is-on', { 'sonido--inline': inline }]}
-  id="btnSonido"
-  type="button"
-  aria-pressed="true"
-  aria-label="Silenciar sonido de mar"
->
-  <svg class="sonido__icon" viewBox="0 0 24 24" width="20" height="20" fill="none"
-       stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M4 9.5v5h3.3L12 18V6L7.3 9.5H4z" fill="currentColor" stroke="none" />
-    <path class="sonido__wave sonido__wave--1" d="M15 9.3a4 4 0 0 1 0 5.4" />
-    <path class="sonido__wave sonido__wave--2" d="M17.6 7a7.2 7.2 0 0 1 0 10" />
-  </svg>
-  <span class="sonido__slash" aria-hidden="true"></span>
-</button>
+<div class:list={['sonido-wrap', { 'sonido-wrap--inline': inline }]}>
+  <span class="sonido-hint" id="sonidoHint">Viví la experiencia</span>
+  <button
+    class:list={['sonido', { 'sonido--inline': inline }]}
+    id="btnSonido"
+    type="button"
+    aria-pressed="false"
+    aria-label="Activar sonido de mar"
+  >
+    <svg class="sonido__icon" viewBox="0 0 24 24" width="20" height="20" fill="none"
+         stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 9.5v5h3.3L12 18V6L7.3 9.5H4z" fill="currentColor" stroke="none" />
+      <path class="sonido__wave sonido__wave--1" d="M15 9.3a4 4 0 0 1 0 5.4" />
+      <path class="sonido__wave sonido__wave--2" d="M17.6 7a7.2 7.2 0 0 1 0 10" />
+    </svg>
+    <span class="sonido__slash" aria-hidden="true"></span>
+  </button>
+</div>
 
 <script>
   const btn = document.getElementById('btnSonido');
+  const hint = document.getElementById('sonidoHint');
   let ctx = null;
   let master = null;
   let started = false;
-  let desiredOn = true; // arranca "activado"; suena en el primer gesto
+  let playing = false;
 
   function build() {
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -85,59 +89,73 @@ const { inline = false } = Astro.props;
     started = true;
   }
 
-  function fade(to) {
+  btn.addEventListener('click', () => {
+    if (!started) build();
+    // Safari (WebKit) exige resume() sincrónico dentro del gesto del usuario.
+    if (ctx.state !== 'running') ctx.resume();
+
+    playing = !playing;
     const now = ctx.currentTime;
     master.gain.cancelScheduledValues(now);
     master.gain.setValueAtTime(master.gain.value, now);
-    master.gain.setTargetAtTime(to, now, 0.7);
-  }
+    master.gain.setTargetAtTime(playing ? 0.32 : 0.0, now, 0.7);
 
-  function reflect() {
-    btn.classList.toggle('is-on', desiredOn);
-    btn.setAttribute('aria-pressed', String(desiredOn));
-    btn.setAttribute('aria-label', desiredOn ? 'Silenciar sonido de mar' : 'Activar sonido de mar');
-    btn.dataset.audio = started && ctx ? ctx.state : 'none';
-  }
+    btn.classList.toggle('is-on', playing);
+    btn.setAttribute('aria-pressed', String(playing));
+    btn.setAttribute('aria-label', playing ? 'Silenciar sonido de mar' : 'Activar sonido de mar');
 
-  // Sincroniza el audio con la intención. DEBE llamarse dentro de un gesto
-  // del usuario para que el navegador permita el sonido (Safari incluido).
-  function apply() {
-    if (desiredOn) {
-      if (!started) build();
-      if (ctx.state !== 'running') ctx.resume(); // sincrónico: clave para Safari
-      if (ctx.state === 'running') fade(0.32);
-    } else if (started) {
-      fade(0);
-    }
-    reflect();
-  }
-
-  // El audio automático está bloqueado: arrancamos en la primera interacción.
-  const gestures = ['pointerdown', 'touchend', 'click', 'keydown'];
-  function kick(e) {
-    const t = e && e.target;
-    if (t && t.closest && t.closest('#btnSonido')) return; // el botón se maneja solo
-    gestures.forEach((ev) => window.removeEventListener(ev, kick));
-    apply();
-  }
-  gestures.forEach((ev) => window.addEventListener(ev, kick, { passive: true }));
-
-  // Botón: activar / silenciar manualmente
-  btn.addEventListener('click', () => {
-    gestures.forEach((ev) => window.removeEventListener(ev, kick));
-    desiredOn = !desiredOn;
-    apply();
+    if (hint) hint.classList.add('is-hidden'); // el badge se retira al primer toque
   });
-
-  reflect(); // estado visual inicial (activado)
 </script>
 
 <style>
-  .sonido {
+  .sonido-wrap {
     position: fixed;
     top: clamp(1rem, 3vw, 1.6rem);
     right: clamp(1rem, 3vw, 1.6rem);
     z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+  .sonido-wrap--inline {
+    position: absolute;
+    top: clamp(0.9rem, 3.5vw, 1.3rem);
+    right: clamp(0.9rem, 3.5vw, 1.3rem);
+  }
+
+  /* Badge invitación */
+  .sonido-hint {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(0.74rem, 3vw, 0.84rem);
+    color: var(--marfil);
+    background: rgba(31, 31, 31, 0.42);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(245, 243, 238, 0.2);
+    border-radius: 999px;
+    padding: 0.34rem 0.8rem;
+    white-space: nowrap;
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    animation: hint-blink 3s ease-in-out infinite;
+  }
+  .sonido-hint.is-hidden {
+    opacity: 0;
+    transform: translateX(8px);
+    pointer-events: none;
+    animation: none; /* al tocar el botón deja de parpadear y se retira */
+  }
+  /* Parpadeo suave: se atenúa y vuelve, sin desaparecer del todo */
+  @keyframes hint-blink {
+    0%, 100% { opacity: 0.28; }
+    50%      { opacity: 1; }
+  }
+
+  /* Botón */
+  .sonido {
+    position: relative;
+    flex: none;
     width: clamp(40px, 10vw, 46px);
     height: clamp(40px, 10vw, 46px);
     display: flex;
@@ -152,12 +170,7 @@ const { inline = false } = Astro.props;
     cursor: pointer;
     transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease, transform 0.2s ease;
   }
-  .sonido--inline {
-    position: absolute;
-    top: clamp(0.9rem, 3.5vw, 1.3rem);
-    right: clamp(0.9rem, 3.5vw, 1.3rem);
-    background: rgba(245, 243, 238, 0.06);
-  }
+  .sonido--inline { background: rgba(245, 243, 238, 0.06); }
   .sonido:hover { border-color: var(--champagne); color: var(--marfil); }
   .sonido:active { transform: scale(0.94); }
   .sonido.is-on { color: var(--marfil); border-color: rgba(245, 243, 238, 0.55); }
@@ -184,6 +197,7 @@ const { inline = false } = Astro.props;
     50%      { opacity: 1; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .sonido.is-on .sonido__wave { animation: none; }
+    .sonido.is-on .sonido__wave,
+    .sonido-hint { animation: none; }
   }
 </style>
