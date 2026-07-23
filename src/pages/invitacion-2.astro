@@ -210,6 +210,10 @@ const waLink = (numero: string, mensaje: string) =>
         padding-block: clamp(2.2rem, 7vw, 3.4rem) clamp(1.4rem, 5vw, 2.4rem);
       }
       .glass-panel .hero__main { justify-content: flex-start; }
+      /* Bajar el logo MAREA para despejarlo del botón de sonido */
+      .glass-panel .hero__logo-wrap { margin-top: clamp(1.4rem, 6vw, 2.6rem); }
+      /* Separar los logos MECOL/CAETANO del párrafo de la descripción */
+      .glass-panel .hero__logos { margin-top: clamp(1rem, 4.5vw, 2rem); }
       /* El pie sin borde duro (queda dentro del vidrio) */
       .glass-panel .pie { border-top: 1px solid var(--linea); }
 
