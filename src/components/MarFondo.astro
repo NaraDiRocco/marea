@@ -1,0 +1,62 @@
+---
+/*
+ * MarFondo.astro — Fondo de mar en VIDEO (real, licencia Canva Pro) a
+ * pantalla completa, como telón detrás de la tarjeta glass.
+ * Overlay oscuro para integrar el turquesa a la paleta sobria de Marea
+ * y asegurar contraste del contenido. Poster para la carga.
+ */
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<div class="mar" aria-hidden="true">
+  <video
+    class="mar__video"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="auto"
+    poster={`${base}/mar-poster.jpg`}
+  >
+    <source src={`${base}/mar.mp4`} type="video/mp4" />
+  </video>
+  <div class="mar__overlay"></div>
+</div>
+
+<style>
+  .mar {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    background: #0e1311;   /* fallback mientras carga el poster/video */
+  }
+  .mar__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Un punto menos de saturación/brillo → más sobrio y nocturno (on-brand) */
+    filter: saturate(0.9) brightness(0.82) contrast(1.04);
+  }
+  /* Velo oscuro (más denso arriba y abajo) para el texto del hero y el pie,
+     con un leve tinte carbón/teal que unifica con la marca */
+  .mar__overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(120% 80% at 50% -10%, rgba(199, 164, 106, 0.10), transparent 55%),
+      linear-gradient(180deg,
+        rgba(12, 16, 15, 0.62) 0%,
+        rgba(12, 16, 15, 0.34) 38%,
+        rgba(12, 16, 15, 0.40) 62%,
+        rgba(10, 12, 11, 0.70) 100%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* Si el usuario reduce movimiento, el navegador suele pausar el autoplay;
+       el poster queda como imagen fija de respaldo. */
+    .mar__video { filter: saturate(0.85) brightness(0.8); }
+  }
+</style>

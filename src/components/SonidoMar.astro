@@ -1,0 +1,150 @@
+---
+/*
+ * SonidoMar.astro — Botón sutil que activa/silencia un "ruido de mar"
+ * generado sintéticamente con Web Audio (ruido filtrado + swell tipo olas).
+ * Sin archivos de audio ni licencias. Requiere un toque del usuario porque
+ * los navegadores bloquean el audio automático.
+ */
+---
+
+<button class="sonido" id="btnSonido" type="button" aria-pressed="false" aria-label="Activar sonido de mar">
+  <span class="sonido__ondas" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+         stroke-width="1.5" stroke-linecap="round">
+      <path class="sonido__ola sonido__ola--1" d="M2 13c1.6 0 1.6-3 3.2-3s1.6 3 3.2 3" />
+      <path class="sonido__ola sonido__ola--2" d="M8.4 13c1.6 0 1.6-3 3.2-3s1.6 3 3.2 3" />
+      <path class="sonido__ola sonido__ola--3" d="M14.8 13c1.6 0 1.6-3 3.2-3s1.6 3 3.2 3" />
+    </svg>
+  </span>
+  <span class="sonido__slash" aria-hidden="true"></span>
+</button>
+
+<script>
+  const btn = document.getElementById('btnSonido');
+  let ctx = null;
+  let master = null;
+  let started = false;
+  let playing = false;
+
+  function build() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    ctx = new AC();
+
+    // Buffer de ruido "browniano" (más grave, tipo oleaje) en loop
+    const dur = 3;
+    const buf = ctx.createBuffer(1, ctx.sampleRate * dur, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    let last = 0;
+    for (let i = 0; i < data.length; i++) {
+      const white = Math.random() * 2 - 1;
+      last = (last + 0.02 * white) / 1.02;
+      data[i] = last * 3.2;
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = buf;
+    noise.loop = true;
+
+    // Filtros: pasa-altos suave + pasa-bajos para el timbre de mar
+    const hp = ctx.createBiquadFilter();
+    hp.type = 'highpass';
+    hp.frequency.value = 110;
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 720;
+    lp.Q.value = 0.6;
+
+    // "Swell": el volumen sube y baja como olas que van y vienen
+    const swell = ctx.createGain();
+    swell.gain.value = 0.55;
+    const lfo = ctx.createOscillator();
+    lfo.frequency.value = 0.11;          // ~1 ola cada 9 s
+    const lfoDepth = ctx.createGain();
+    lfoDepth.gain.value = 0.4;
+    lfo.connect(lfoDepth).connect(swell.gain);
+
+    // Segunda modulación más lenta para que no sea perfectamente regular
+    const lfo2 = ctx.createOscillator();
+    lfo2.frequency.value = 0.037;
+    const lfo2Depth = ctx.createGain();
+    lfo2Depth.gain.value = 0.12;
+    lfo2.connect(lfo2Depth).connect(swell.gain);
+
+    // Master (toggle on/off con fade)
+    master = ctx.createGain();
+    master.gain.value = 0;
+
+    noise.connect(hp).connect(lp).connect(swell).connect(master).connect(ctx.destination);
+    noise.start();
+    lfo.start();
+    lfo2.start();
+    started = true;
+  }
+
+  btn.addEventListener('click', async () => {
+    if (!started) build();
+    if (ctx.state === 'suspended') await ctx.resume();
+
+    playing = !playing;
+    const now = ctx.currentTime;
+    master.gain.cancelScheduledValues(now);
+    master.gain.setValueAtTime(master.gain.value, now);
+    master.gain.setTargetAtTime(playing ? 0.32 : 0.0, now, 0.7);
+
+    btn.classList.toggle('is-on', playing);
+    btn.setAttribute('aria-pressed', String(playing));
+    btn.setAttribute('aria-label', playing ? 'Silenciar sonido de mar' : 'Activar sonido de mar');
+  });
+</script>
+
+<style>
+  .sonido {
+    position: fixed;
+    top: clamp(1rem, 3vw, 1.6rem);
+    right: clamp(1rem, 3vw, 1.6rem);
+    z-index: 20;
+    width: clamp(42px, 11vw, 48px);
+    height: clamp(42px, 11vw, 48px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--linea-dorada);
+    background: rgba(31, 31, 31, 0.55);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    color: var(--piedra);
+    cursor: pointer;
+    transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease, transform 0.2s ease;
+  }
+  .sonido:hover { border-color: var(--champagne); color: var(--marfil); }
+  .sonido:active { transform: scale(0.94); }
+  .sonido.is-on { color: var(--champagne); border-color: var(--champagne); }
+
+  .sonido__ondas { display: flex; }
+
+  /* Línea de "mute" cuando está apagado; se oculta al activar */
+  .sonido__slash {
+    position: absolute;
+    width: 26px;
+    height: 1.4px;
+    background: var(--piedra);
+    transform: rotate(-45deg);
+    transition: opacity 0.3s ease, background 0.3s ease;
+    opacity: 0.85;
+  }
+  .sonido.is-on .sonido__slash { opacity: 0; }
+
+  /* Al activar, las olas del ícono laten suavemente */
+  .sonido.is-on .sonido__ola { animation: ola-late 2.4s ease-in-out infinite; }
+  .sonido.is-on .sonido__ola--2 { animation-delay: 0.25s; }
+  .sonido.is-on .sonido__ola--3 { animation-delay: 0.5s; }
+
+  @keyframes ola-late {
+    0%, 100% { opacity: 0.55; }
+    50%      { opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sonido.is-on .sonido__ola { animation: none; }
+  }
+</style>
