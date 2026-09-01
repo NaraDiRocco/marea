@@ -23,3 +23,7 @@ Logo Marea (1).png
 # Presupuesto (documento interno)
 presupuesto-marea.md
 Presupuesto - Marea.pdf
+
+# Salidas locales de los scripts de PDF (material interno, ~40MB)
+output/
+tmp/

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-label="Punta del Este">
+  <defs>
+    <linearGradient id="bg-placeholder-punta-del-este-svg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#161616"/>
+      <stop offset="55%" stop-color="#1f1f1f"/>
+      <stop offset="100%" stop-color="#2a2724"/>
+    </linearGradient>
+    <linearGradient id="line-placeholder-punta-del-este-svg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#c7a46a" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#c7a46a" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#c7a46a" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg-placeholder-punta-del-este-svg)"/>
+  <rect x="0" y="0" width="1600" height="900" fill="none" stroke="#c7a46a" stroke-opacity="0.18" stroke-width="1"/>
+  <!-- icono de imagen, tenue -->
+  <g transform="translate(728.0,342.0)" opacity="0.35" stroke="#bdb7ae" stroke-width="4.32" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="0" y="0" width="144.0" height="112.32000000000001" rx="8.64"/>
+    <circle cx="34.56" cy="37.44" r="12.959999999999999"/>
+    <path d="M0 89.28 L46.08 51.839999999999996 L83.52 80.64000000000001 L112.32000000000001 57.6 L144.0 86.39999999999999"/>
+  </g>
+  <!-- filete dorado -->
+  <rect x="512.0" y="503.28" width="576.0" height="1.4" fill="url(#line-placeholder-punta-del-este-svg)"/>
+  <!-- rotulo -->
+  <text x="50%" y="529.28" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="34" fill="#f5f3ee" fill-opacity="0.38">Punta del Este</text>
+  <text x="50%" y="567.68" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" letter-spacing="2" fill="#c7a46a" fill-opacity="0.45">16:9</text>
+</svg>

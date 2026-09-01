@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" width="600" height="800" role="img" aria-label="Equipo Marea">
+  <defs>
+    <linearGradient id="bg-placeholder-equipo-1-svg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#161616"/>
+      <stop offset="55%" stop-color="#1f1f1f"/>
+      <stop offset="100%" stop-color="#2a2724"/>
+    </linearGradient>
+    <linearGradient id="line-placeholder-equipo-1-svg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#c7a46a" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#c7a46a" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#c7a46a" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="800" fill="url(#bg-placeholder-equipo-1-svg)"/>
+  <rect x="0" y="0" width="600" height="800" fill="none" stroke="#c7a46a" stroke-opacity="0.18" stroke-width="1"/>
+  <!-- icono de imagen, tenue -->
+  <g transform="translate(252.0,320.0)" opacity="0.35" stroke="#bdb7ae" stroke-width="2.88" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="0" y="0" width="96.0" height="74.88" rx="5.76"/>
+    <circle cx="23.04" cy="24.96" r="8.64"/>
+    <path d="M0 59.519999999999996 L30.72 34.56 L55.67999999999999 53.760000000000005 L74.88 38.400000000000006 L96.0 57.599999999999994"/>
+  </g>
+  <!-- filete dorado -->
+  <rect x="192.0" y="427.52" width="216.0" height="1.4" fill="url(#line-placeholder-equipo-1-svg)"/>
+  <!-- rotulo -->
+  <text x="50%" y="453.52" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="19.2" fill="#f5f3ee" fill-opacity="0.82">Equipo Marea</text>
+  <text x="50%" y="469.52" text-anchor="middle" font-family="Arial, sans-serif" font-size="12.0" letter-spacing="2" fill="#c7a46a" fill-opacity="0.75">3:4</text>
+</svg>
